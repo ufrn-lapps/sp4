@@ -1,0 +1,15 @@
+__pycache__
+.vscode
+.generated
+*.o
+input/u_vec\.txt
+output/u_vec\.txt
+# OPS files
+forward-ops_*
+CUDA/
+MPI/
+MPI_OpenMP/
+MPI_inline/
+OpenACC/
+OpenCL/
+Tiled/
