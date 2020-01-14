@@ -1,6 +1,6 @@
 # these file have changed location, see /sp4-fwi/data_samples/
-rec_core_path = 'output-core/rec.txt'
-rec_ops_path  = 'output-ops/rec.txt'
+rec_core_path = '../data_samples/output-core/rec.txt'
+rec_ops_path  = '../data_samples/output-ops/rec.txt'
 
 rec_core = []
 rec_ops = []
@@ -61,4 +61,5 @@ plt.yticks([])
 
 plt.show()
 
-
+diff = [a - b for a, b in zip(t_rec_core[CHOOSE_N], t_rec_ops[CHOOSE_N])]
+print(max(diff), min(diff))
