@@ -1,0 +1,30 @@
+{
+    "title": "Roofline GPU V100",
+    "roofs": [
+        {
+            "memory": 900,
+            "memory_text": "Peak Memory DP",
+            "compute": 7000.0,
+            "compute_text": "Peak Performance DP",
+            "points": [
+                {
+                    "ai": 2.58,
+                    "gflops": 2085.75,
+                    "label": "SO=2",
+                    "color": "b",
+                    "marker": "x"
+                },
+                {
+                    "ai": 3.5,
+                    "gflops": 2400.0,
+                    "label": "SO=4"
+                },
+                {
+                    "ai": 6,
+                    "gflops": 2600.0,
+                    "label": "SO=8"
+                }
+            ]
+        }
+    ]
+}
