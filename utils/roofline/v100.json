@@ -1,0 +1,57 @@
+{
+    "title": "Roofline V100",
+    "xmin": 4,
+    "xmax": 20,
+    "ymin": 100,
+    "ymax": 30000,
+    "roofs": [
+        {
+            "memory": 900,
+            "memory_text": "",
+            "compute": 14000.0,
+            "compute_text": "SP Ideal 14000 GFLOPs/sec",
+            "points": [
+                {
+                    "ai": 4.90,
+                    "gflops": 693.77,
+                    "label": "SO=8",
+                    "time": "62.74s",
+                    "color": "c",
+                    "marker": "o"
+                },
+                {
+                    "ai": 6.90,
+                    "gflops": 740.48,
+                    "label": "SO=12",
+                    "time": "81.57s",
+                    "color": "b",
+                    "marker": "o"
+                },
+                {
+                    "ai": 9.61,
+                    "gflops": 816.86,
+                    "label": "SO=16",
+                    "time": "87.24s",
+                    "color": "m",
+                    "marker": "o"
+                },
+                {
+                    "ai": 7.64,
+                    "gflops": 719.60,
+                    "label": "SO=24",
+                    "time": "120.83s",
+                    "color": "g",
+                    "marker": "o"
+                },
+                {
+                    "ai": 6.42,
+                    "gflops": 454.86,
+                    "label": "SO=32",
+                    "time": "105.50s",
+                    "color": "r",
+                    "marker": "o"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,9 @@
+memroofs 900
+mem_roof_names 'HBM'
+comproofs 7000.0
+comp_roof_names 'Peak'
+
+# omit the following if only plotting roofs
+AI 2.584785579 3.5 6
+FLOPS 2085.756683 2400 2600
+labels 'OPS, SO=2' 'OPS, SO=4' 'OPS, SO=8'

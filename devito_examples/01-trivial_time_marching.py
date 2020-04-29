@@ -5,3 +5,6 @@ grid_2d = Grid(shape=(4, 4))
 v = TimeFunction(name='v', grid=grid_2d, time_order=2, save=2)
 equation = Eq(v.forward, v+1)
 operator = Operator(equation)
+
+print(operator)
+operator.apply()

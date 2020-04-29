@@ -1,0 +1,57 @@
+{
+    "title": "Roofline Titan Z",
+    "xmin": 0.5,
+    "xmax": 8,
+    "ymin": 1,
+    "ymax": 5000,
+    "roofs": [
+        {
+            "memory": 673,
+            "memory_text": "",
+            "compute": 4746.0,
+            "compute_text": "SP Ideal 4746 GFLOPs/sec",
+            "points": [
+                {
+                    "ai": 1.99,
+                    "gflops": 78.95,
+                    "label": "SO=8",
+                    "time": "551.03s",
+                    "color": "c",
+                    "marker": "o"
+                },
+                {
+                    "ai": 1.12,
+                    "gflops": 35.38,
+                    "label": "SO=12",
+                    "time": "853.53s",
+                    "color": "b",
+                    "marker": "o"
+                },
+                {
+                    "ai": 2.47,
+                    "gflops": 76.03,
+                    "label": "SO=16",
+                    "time": "937.21s",
+                    "color": "m",
+                    "marker": "o"
+                },
+                {
+                    "ai": 2.72,
+                    "gflops": 75.60,
+                    "label": "SO=24",
+                    "time": "1150s",
+                    "color": "g",
+                    "marker": "o"
+                },
+                {
+                    "ai": 0.75,
+                    "gflops": 21.812,
+                    "label": "SO=32",
+                    "time": "1100s",
+                    "color": "r",
+                    "marker": "o"
+                }
+            ]
+        }
+    ]
+}

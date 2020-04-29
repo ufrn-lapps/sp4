@@ -82,6 +82,7 @@ for i in range(9):
     op_fwd = Operator(eqn + src_term + rec_term,
                       subs=model.spacing_map, name='Forward')
 
+    print(op_fwd)
     op_fwd.apply(src=src_true, rec=receiver, u=u0_man,
                  vp=model.vp, dt=model.critical_dt)
 
