@@ -1,3 +1,27 @@
+##########################################################################################
+# This code is based on devito user api tutorial 03_subdomains.
+# 
+# Information:
+# Grid:             200 x 100 x 100
+# Grid spacing:     1.0
+# Stencil Order:    4
+# Number NBL cells: 20
+#
+# Upper Domain 
+# Water layer
+# vp:               1500 m.s⁻¹
+# vs:               0 m.s⁻¹
+# rho:              1020 kg.m⁻³
+#
+# Lower Domain
+# Solid layer
+# vp:               3400 m.s⁻¹
+# vs:               1963 m.s⁻¹
+# rho:              2599 m.s⁻¹
+##########################################################################################
+
+
+
 import numpy as np
 from sympy import Symbol
 from devito import (Grid, TimeFunction, Eq, VectorTimeFunction, TensorTimeFunction,
@@ -74,9 +98,8 @@ def experiment_subdomain(water_level=0.5):
     # Thorbecke's parameter notation
     l = model_elastic.lam                        # (vp² - 2vs²)*rho
     mu = model_elastic.mu                        # vs²*rho
-    mu_acoustic = model_elastic.mu_acoustic      # vp²*rho - created myself
     irho = model_elastic.irho                    # 1/rho
-    s = model_elastic.grid.stepping_dim.spacing  # dt
+    s = model_elastic.grid.stepping_dim.spacing
 
     t0, tn = np.float32(0.), np.float32(30.)
     dt = np.float32(0.9*model_elastic.critical_dt)
@@ -106,11 +129,11 @@ def experiment_subdomain(water_level=0.5):
 
     # Upper domain equations
     # Update velocity in upper domain
-    u_v_u = Eq(v.forward, model_elastic.damp * (v + dt*irho*div(tau)),
+    u_v_u = Eq(v.forward, model_elastic.damp * (v + s*irho*div(tau)),
                subdomain=model_elastic.grid.subdomains['upper'])
     # Update tau in upper domain
     u_t_u = Eq(tau.forward, model_elastic.damp * (tau +
-                                                  s * mu_acoustic * diag(div(v.forward))),
+                                                  s * l * diag(div(v.forward))),
                subdomain=model_elastic.grid.subdomains['upper'])
 
     # Lower domain equations
@@ -123,31 +146,21 @@ def experiment_subdomain(water_level=0.5):
                                                   s * mu * (grad(v.forward) + grad(v.forward).T)),
                subdomain=model_elastic.grid.subdomains['lower'])
 
-    # Interface equation
-    ## u_v_i = Eq(tau.forward, tau,
-    ##           subdomain=model_elastic.grid.subdomains['interface'])
-
-    op = Operator([u_v_u, u_v_l, u_t_u, u_t_l] + src_xx + src_yy +
-                  src_zz, subs=model_elastic.spacing_map)
-    
-
-    print(dt, t0, tn)
+    op = Operator([u_v_u, u_v_l, u_t_u, u_t_l] + src_xx + src_yy + src_zz, subs=model_elastic.spacing_map)
     op.apply(dt=dt)
-    # Plots
 
+    # Plots
     # Mid-points:
-    mid_x = int(0.5*(v[0].data.shape[1]-1))+1
-    mid_y = int(0.5*(v[0].data.shape[2]-1))+1
+    #mid_x = int(0.5*(v[0].data.shape[1]-1))+1
+    #mid_y = int(0.5*(v[0].data.shape[2]-1))+1
 
     # Plot some selected results:
-    plot_image(v[0].data[1, :, mid_y, :], cmap="seismic")
-    plot_image(v[0].data[1, mid_x, :, :], cmap="seismic")
+    #plot_image(v[0].data[1, :, mid_y, :], cmap="seismic")
+    #plot_image(v[0].data[1, mid_x, :, :], cmap="seismic")
 
     #plot_image(tau[2, 2].data[1, :, mid_y, :], cmap="seismic")
     #plot_image(tau[2, 2].data[1, mid_x, :, :], cmap="seismic")
 
 
-# for i in range(1):
-#    for water_level in np.arange(0.1, 0.9, 0.1):
-#        print("Water Level: %f" % (water_level))
-experiment_subdomain(0.5)
+for i in range(5):
+    experiment_subdomain(0.5)
