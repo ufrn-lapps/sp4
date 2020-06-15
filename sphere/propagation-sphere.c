@@ -4,7 +4,6 @@
 
 // Define global variables here
 int TIME_ORDER = 2;
-int DIMS = 2;
 
 int main(int argc, char const *argv[])
 {
