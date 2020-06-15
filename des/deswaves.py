@@ -145,16 +145,16 @@ class DESEventTemplate(object):
         creates a DES Event connected with a grid point (i0,i1 [,i2]) and initial time T0.
         """
         self.has_valid_scheduled_time = False
-        self.event_in_eternity = False
+        self.event_in_eternity = False          # Event that last forever? 
         self.is_synchronized = False
         self.inPEP = False
-        self.i0 = i0  # grid point location
+        self.i0 = i0                            # Grid point location
         self.i1 = i1
         self.i2 = i2
-        self.dt_CFL = sys.float_info.max  # the local save time step size
-        self.t_current = T0  # time of event
-        self.dU = 0.                     # accumulated solution increment
-        self.observer = None             # an observer (if available)
+        self.dt_CFL = sys.float_info.max        # The local save time step size
+        self.t_current = T0                     # Time of event
+        self.dU = 0.                            # Accumulated solution increment
+        self.observer = None                    # An observer (if available)
         self.source = None
 
     def addObserver(self, observer=None):
@@ -322,9 +322,9 @@ class Wave2DOrder2(DESEventTemplate):
         """
         if self._interior:
             if self.source:
-                return "Wave2DOrder2@(%s,%s, s=%s)" % (self.i0, self.i1, self.source)
+                return "Wave2DOrder2@(%s, %s, s=%s)" % (self.i0, self.i1, self.source)
             else:
-                return "Wave2DOrder2@(%s,%s)" % (self.i0, self.i1)
+                return "Wave2DOrder2@(%s, %s)" % (self.i0, self.i1)
 
         else:
             return "Wave2DOrder2@Padding(%s,%s)" % (self.i0, self.i1)
@@ -340,7 +340,7 @@ class Wave2DOrder2(DESEventTemplate):
             self.neigbours = []
 
     def computeNewRate(self, U, V, A, first=False):
-        if self._interior:  # don't update in the padding zone!
+        if self._interior:  # Don't update in the padding zone!
 
             a = -self.c**2*(4*U[self.i0, self.i1, 0]-U[self.i0-1, self.i1, 0]-U[self.i0+1,
                                                                                 self.i1, 0]-U[self.i0, self.i1-1, 0]-U[self.i0, self.i1+1, 0])/self.d0**2
@@ -371,15 +371,13 @@ class Wave2DOrder2(DESEventTemplate):
         """
         if stage == 1:
             self.R[0] = self.c**2*U[self.i0, self.i1, 1]
-            self.R[1] = -(4*U[self.i0, self.i1, 0]-U[self.i0-1, self.i1, 0]-U[self.i0+1,
-                                                                              self.i1, 0]-U[self.i0, self.i1-1, 0]-U[self.i0, self.i1+1, 0])/self.d0**2
+            self.R[1] = -(4 * U[self.i0, self.i1, 0] - U[self.i0-1, self.i1, 0] - U[self.i0+1, self.i1, 0] - U[self.i0, self.i1-1, 0] - U[self.i0, self.i1+1, 0]) / self.d0**2
             if self.source:
                 q = self.source.getValue(t=self.t_current)
                 self.R[1] += q
         elif stage == 2:
             dt = self.dt
-            U[self.i0, self.i1] = U[self.i0, self.i1] + \
-                dt/2*(self.R-R[self.i0, self.i1])
+            U[self.i0, self.i1] = U[self.i0, self.i1] + dt/2 * (self.R - R[self.i0, self.i1]) # DONT EXIST R, only self.R
 
 
 class DESBoudaryEvent(DESEventTemplate):
@@ -418,9 +416,10 @@ class DESScheduler(object):
         """
         this runs the DESScheduler until `t_current` for all events have passed `T_end` 
         """
-        self.eventQueue = []  # filled by self.processPEP
+        # Filled by self.processPEP
+        self.eventQueue = []  
 
-        # initialize all events by adding them to the pepList:
+        # Initialize all events by adding them to the pepList:
         self.pepList = []
         for E in np.nditer(self.eventArray, flags=["refs_ok"]):
             e = E.tolist()
@@ -428,36 +427,35 @@ class DESScheduler(object):
             e.inPEP = True
             e.event_in_eternity = False
             self.pepList.append(e)
-        Dlogger.info("Initial PEP list with %s events is processed." %
-                     len(self.pepList))
+
+        Dlogger.info("Initial PEP list with %s events is processed." % len(self.pepList))
         self.processPEP(T_end, first=True)  # fills self.eventQueue
         iterCount = 0
-        Dlogger.info("Initial eventQueue has %s elements." %
-                     len(self.eventQueue))
+        Dlogger.info("Initial eventQueue has %s elements." % len(self.eventQueue))
+
         # now we start to progress in time until T_end is reached.
-        # all events are processed and pepList is empty- nothing to do anymore
+        # all events are processed and pepList is empty - nothing to do anymore
         while len(self.eventQueue) > 0:
 
-            # sort the eventQueue by dt_target set by e.setScheduledTime
+            # Sort the eventQueue by dt_target set by e.setScheduledTime
             self.eventQueue.sort(key=lambda e: e.dt_target)
 
-            # pick the event at the top of the list:
+            # Pick the event at the top of the list
             self.T_clock = self.eventQueue[0].t_scheduled
             dt_prep = self.OMEGA_PEP*self.eventQueue[0].dt_target
-            Dlogger.info("Event %s, T_clock = %g sec" %
-                         (iterCount, self.T_clock))
+            Dlogger.info("Event %s, T_clock = %g sec" % (iterCount, self.T_clock))
             niter = 0
             while (len(self.eventQueue) > 0 and
-                  self.eventQueue[0].t_scheduled <= self.T_clock + dt_prep):
+                   self.eventQueue[0].t_scheduled <= self.T_clock + dt_prep):
 
                 e_top = self.eventQueue[0]
                 Dlogger.debug("%s selected from event queue, scheduled time = %g sec" % (e_top, e_top.t_scheduled))
 
                 e_top.makeSolutionPrediction(self.T_clock, self.U, self.V, self.A, self.pepList)
                 e_top.synchronize(self.U, self.V, self.A, self.pepList)
-                dt_prep = min(dt_prep, self.OMEGA_PEP*e_top.dt_target)
+                dt_prep = min(dt_prep, self.OMEGA_PEP * e_top.dt_target)
 
-                # Make sure that we are looking at events that have still valid
+                # Make sure that we are looking at events that are still valid
                 self.eventQueue = [e for e in self.eventQueue if e.has_valid_scheduled_time and not e.inPEP]
                 niter += 1
 
@@ -484,20 +482,23 @@ class DESScheduler(object):
                     e.updateSolution(i, self.U, self.V, self.R)
                 # with treading add a barrier synchronization HERE!
 
-        # at this point U is the solution at T_clock and a new rate R(T_clock, U)
+        # At this point U is the solution at T_clock and a new rate R(T_clock, U)
         # for the next prediction step is calculated:
-        # omp parallel for
         for e in self.pepList:
-            # this compute the rates R for a predictor step
+            # This compute the rates R for a predictor step
             if e.observer:
                 e.observer.addValue(e.t_current, self.U[e.i0, e.i1])
+
             e.computeNewRate(self.U, self.V, self.A, first)
+
             if not e.has_valid_scheduled_time:
-                e.setScheduledTime(T_end, self.V, self.A,
-                                   self.thresholds, self.OMEGA_CFL)
+                e.setScheduledTime(T_end, self.V, self.A, self.thresholds, self.OMEGA_CFL)
+
                 if not e.event_in_eternity:
                     self.eventQueue.append(e)
+
             e.inPEP = False
             e.is_synchronized = False
-        # with treading add a barrier synchronization HERE!
+
+        # With treading add a barrier synchronization HERE!
         self.pepList = []

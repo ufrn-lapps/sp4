@@ -13,9 +13,9 @@ sys.setrecursionlimit(50000)
 if __name__ == "__main__":
 
     # Create logger
-    logging.basicConfig(level=logging.INFO, format="%(message)s", datefmt="[%X]", handlers=[RichHandler()]) 
+    logging.basicConfig(level=logging.INFO, format="%(message)s",
+                        datefmt="[%X]", handlers=[RichHandler()])
     logger = logging.getLogger("DES")
-
 
     # --------------------------------- PARAMETERS ----------------------------------
     D = 0.8             # Element size (Cell size ?)
@@ -26,11 +26,9 @@ if __name__ == "__main__":
     c = 3000.           # propagation speed [m/sec]
     f_max = 80          # Source max frequency [hz]
     # -------------------------------------------------------------------------------
-
-
-    padding = max(1, int(order/2))  # Padding in each dimension/direction 
+    padding = max(1, int(order/2))  # Padding in each dimension/direction
     lambda_min = c/(2*np.pi*f_max)  # Some source parameter...
-    L = min((nx-1)*D, (ny-1)*D)     # Distance until the closest border 
+    L = min((nx-1)*D, (ny-1)*D)     # Distance until the closest border
     t0 = 0.04                       # Initial time step - same as reference
     Tend = L/2/c+t0                 # Time to reach closest boundary ??
 
@@ -47,9 +45,9 @@ if __name__ == "__main__":
     assert lambda_min > D
 
     src = Ricker(f_max/2.7, sampleRate=1./f_max*.1, center=t0)
-    logger.info("source %s built. value(t=0 sec) = %g." % (src, src.getValue(0)))
+    logger.info("source %s built. value(t=0 sec) = %g." %
+                (src, src.getValue(0)))
     assert abs(src.getValue(0)) < 1e-2
-
 
     # Plot source data
     if True:
@@ -61,7 +59,6 @@ if __name__ == "__main__":
         plt.savefig("source.png")
         logger.info("source.png created.")
 
-
     obs0 = WaveObserver(name="p@0")
     obs1 = WaveObserver(name="p@5")
     obs2 = WaveObserver(name="p@10")
@@ -72,7 +69,7 @@ if __name__ == "__main__":
         eventArray.append([])
         for iy in range(0, ny+2*padding):
             interior = padding <= ix and ix < padding + \
-                nx and padding <= iy and iy < padding+ny
+                nx and padding <= iy and iy < padding + ny
             eventArray[-1].append(Wave2DOrder2(ix, iy, c=c,
                                                d0=D, interior=interior))
 
@@ -85,7 +82,7 @@ if __name__ == "__main__":
     eventArray[int(padding+nx/2-5), int(padding+ny/2)].addObserver(obs1)
     eventArray[int(padding+nx/2-10), int(padding+ny/2)].addObserver(obs2)
 
-    # open the DES schedule
+    # Open the DES schedule
     des = DESScheduler(eventArray, numStages=1, thresholds=np.array([1e-6]))
 
     des.run(T_end=Tend)

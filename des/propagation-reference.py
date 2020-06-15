@@ -74,11 +74,11 @@ if __name__ == "__main__":
             # Predictor step
             for j in range(1, NY):
                 for i in range(1, NX):
-                    U[i, j] = U1[i, j]+dt*V1[i, j]+dt**2/2*A1[i, j]
+                    U[i, j] = U1[i, j] + dt*V1[i, j]+dt**2/2*A1[i, j]
                     A[i, j] = -c**2/D**2 * (4*U[i, j]-U[i-1, j]-U[i+1, j]-U[i, j-1]-U[i, j+1])
 
 
-            q = src.getValue(T+dt)
+            q = src.getValue(T + dt)
             A[iS, jS] += c**2*q
 
             for j in range(1, NY):
@@ -114,14 +114,12 @@ if __name__ == "__main__":
             UU1.append(U[int(Padding+NX/2-5), int(Padding+NY/2)])
             UU2.append(U[int(Padding+NX/2-NX/10), int(Padding+NY/2)])
 
-            print(T, q, U[iS, jS], U[int(Padding+NX/2-5), int(Padding+NY/2)],
-                  U[int(Padding+NX/2-NX/10), int(Padding+NY/2)])
+            print(T, q, U[iS, jS], U[int(Padding+NX/2-5), int(Padding+NY/2)], U[int(Padding+NX/2-NX/10), int(Padding+NY/2)])
 
             U1, U2 = U, U1
 
 
     if True:
-        import matplotlib.pyplot as plt
         plt.clf()
         # ,  linewidths=0.5, linestyles='solid',  colors='black')
         plt.plot(TT, UU0, label='pos1')
