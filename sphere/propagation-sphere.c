@@ -57,10 +57,11 @@ int main(int argc, char const *argv[])
     }
     // Source injection
     printf("Source injection...\n");
-    u[0][22][22] = 1.;
+    int middle_point[2] = {size_u[0] / 2, size_u[1] / 2};
+    u[0][middle_point[0]][middle_point[1]] = 1.;
 
     // Print intial data
-    print_array_2d(u[0], size_u[0], size_u[1]);
+    // print_array_2d(u[0], size_u[0], size_u[1]);
 
     printf("Wave propagation...\n");
     float r1 = 0.0784;
@@ -68,13 +69,11 @@ int main(int argc, char const *argv[])
          time <= time_M;
          time += 1, t0 = (time) % (3), t1 = (time + 1) % (3), t2 = (time + 2) % (3))
     {
-        printf("t0=%d,t1=%d,t2=%d", t0, t1, t2);
-        for (int x = x_m / 2; x < x_M; x += 1)
+        for (int x = x_m - SPACE_ORDER / 2; x < x_M - SPACE_ORDER / 2; x += 1) // x=1...45
         {
-            for (int y = y_m; y < y_M; y += 1)
+            for (int y = y_m - SPACE_ORDER / 2; y < y_M - SPACE_ORDER / 2; y += 1) // y=2...45
             {
                 //float r0 = vp[(x*(size_u[0] + 2)) + y + 2] * vp[(x*(size_u[0] + 2)) + y + 2];
-                printf("[%d][%d] ", x + 3, y + 3);
                 float r0 = vp[x + 2][y + 2] * vp[x + 2][y + 2];
                 u[t1][x + 2][y + 2] = -4.0F * r0 * r1 * u[t0][x + 2][y + 2] +
                                       1.0F * (r0 * r1 * u[t0][x + 1][y + 2] +
@@ -84,7 +83,6 @@ int main(int argc, char const *argv[])
                                               u[t2][x + 2][y + 2]) +
                                       2.0F * u[t0][x + 2][y + 2];
             }
-            printf("\n");
         }
     }
 
