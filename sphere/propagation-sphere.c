@@ -24,7 +24,7 @@ int main(int argc, char const *argv[])
     float ***u;
 
     // Allocate data
-    printf("Allocating u array with dimensions %dx%dx%d...\n", TIME_ORDER + 1, size_u[0], size_u[1]);
+    printf("Allocating u array with dimensions %d x %d x %d...\n", TIME_ORDER + 1, size_u[0], size_u[1]);
     u = (float ***)malloc(sizeof(float **) * (TIME_ORDER + 1));
     for (int i = 0; i < TIME_ORDER + 1; i++)
     {
@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
         }
     }
 
-    printf("Allocating vp array with dimensions %dx%d...\n", size_u[0], size_u[1]);
+    printf("Allocating vp array with dimensions %d x %d...\n", size_u[0], size_u[1]);
     vp = (float **)malloc(sizeof(float *) * size_u[0]);
     for (int j = 0; j < size_u[0]; j++)
     {
