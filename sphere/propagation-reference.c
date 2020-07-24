@@ -24,7 +24,7 @@ int main(int argc, char const *argv[])
     float ***u;
 
     // Allocate data
-    printf("Allocating u array with dimensions %d x %d x %d...\n", TIME_ORDER + 1, size_u[0], size_u[1]);
+    // printf("Allocating u array with dimensions %d x %d x %d...\n", TIME_ORDER + 1, size_u[0], size_u[1]);
     u = (float ***)malloc(sizeof(float **) * (TIME_ORDER + 1));
     for (int i = 0; i < TIME_ORDER + 1; i++)
     {
@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
         }
     }
 
-    printf("Allocating vp array with dimensions %d x %d...\n", size_u[0], size_u[1]);
+    // printf("Allocating vp array with dimensions %d x %d...\n", size_u[0], size_u[1]);
     vp = (float **)malloc(sizeof(float *) * size_u[0]);
     for (int j = 0; j < size_u[0]; j++)
     {
@@ -43,7 +43,7 @@ int main(int argc, char const *argv[])
     }
 
     // Initializing values
-    printf("Initializing data...\n");
+    // printf("Initializing data...\n");
     for (int j = 0; j < size_u[0]; j++)
     {
         for (int k = 0; k < size_u[1]; k++)
@@ -54,26 +54,25 @@ int main(int argc, char const *argv[])
             vp[j][k] = 1.5;
         }
     }
-    // Source injection
-    printf("Source injection...\n");
+    // TODO CHANGE SOURCE! Source injection
+    // printf("Source injection...\n");
     int middle_point[2] = {size_u[0] / 2, size_u[1] / 2};
-    u[0][middle_point[0]][middle_point[1]] = 1.;
+    u[time_m % 3][middle_point[0]][middle_point[1]] = 1.;
 
     // Print intial data
     // print_array_2d(u[0], size_u[0], size_u[1]);
 
-    printf("Wave propagation...\n");
+    // printf("Wave propagation...\n");
     float r1 = 0.0784;
     for (int time = time_m, t0 = (time) % (3), t1 = (time + 1) % (3), t2 = (time + 2) % (3);
          time <= time_M;
          time += 1, t0 = (time) % (3), t1 = (time + 1) % (3), t2 = (time + 2) % (3))
     {
-        
+
         for (int x = x_m - 1; x < x_M - 1; x += 1)
         {
             for (int y = y_m - 1; y < y_M - 1; y += 1)
             {
-                //float r0 = vp[(x*(size_u[0] + 2)) + y + 2] * vp[(x*(size_u[0] + 2)) + y + 2];
                 float r0 = vp[x + 2][y + 2] * vp[x + 2][y + 2];
                 u[t1][x + 2][y + 2] = -4.0F * r0 * r1 * u[t0][x + 2][y + 2] +
                                       1.0F * (r0 * r1 * u[t0][x + 1][y + 2] +
@@ -84,10 +83,10 @@ int main(int argc, char const *argv[])
                                       2.0F * u[t0][x + 2][y + 2];
             }
         }
+        print_array_2d(u[1], size_u[0], size_u[1]);
     }
 
     // Print result
-    print_array_2d(u[1], size_u[0], size_u[1]);
 
     return 0;
 }

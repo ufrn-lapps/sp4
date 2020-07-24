@@ -18,3 +18,6 @@ des/plot.png
 sphere/propagation-sphere
 sphere/sphere
 sphere/propagation-reference
+sphere/out-reference.txt
+sphere/out-sphere.txt
+sphere/test.sh
