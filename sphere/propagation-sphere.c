@@ -99,20 +99,22 @@ int main(int argc, char const *argv[])
         // Calculate dimension extremes
         raio = vp_max * time; // Em metros
 
-        y_min = max((y_m - 1) * points_distance[1], source_location[1] * points_distance[1] - (raio)); // Em metros
-
-        y_max = min((y_M - 1) * points_distance[1], source_location[1] * points_distance[1] + (raio)); // Em metros
+        float s1 = source_location[1] * points_distance[1];
+        y_min = max((y_m - 1) * points_distance[1], s1 - raio); // Em metros
+        y_max = min((y_M - 1) * points_distance[1], s1 + raio); // Em metros
 
         for (int y = (int)floor(y_min / points_distance[1]); y < (int)ceil(y_max / points_distance[1]); y += 1) // Converte para pontos cartesianos.
         {
+            float s2 = source_location[0] * points_distance[0];
+            float s3 = y - source_location[1] * points_distance[1];
+            float s4 = sqrt(raio * raio - s3 * s3);
             // Em metros
-            x_min = max((x_m - 1) * points_distance[0], source_location[0] * points_distance[0] - sqrt(raio * raio - pow((y - source_location[1] * points_distance[1]), 2)));
+            x_min = max((x_m - 1) * points_distance[0], s2 - s4);
             // Em metros
-            x_max = min((x_M - 1) * points_distance[0], source_location[0] * points_distance[0] + sqrt(raio * raio - pow((y - source_location[1] * points_distance[1]), 2)));
+            x_max = min((x_M - 1) * points_distance[0], s2 + s4);
 
             for (int x = (int)floor(x_min / points_distance[0]); x < (int)ceil(x_max / points_distance[0]); x += 1) // Converte para pontos cartesianos.
             {
-
                 float r0 = vp[x][y] * vp[x][y];
                 u[t1][x][y] = -4.0F * r0 * r1 * u[t0][x][y] +
                               1.0F * (r0 * r1 * u[t0][x - 1][y] +
@@ -123,10 +125,10 @@ int main(int argc, char const *argv[])
                               2.0F * u[t0][x][y];
             }
         }
-        print_array_2d(u[1], size_u[0], size_u[1]);
     }
 
     // Print result
+    print_array_2d(u[1], size_u[0], size_u[1]);
 
     return 0;
 }

@@ -83,10 +83,10 @@ int main(int argc, char const *argv[])
                                       2.0F * u[t0][x + 2][y + 2];
             }
         }
-        print_array_2d(u[1], size_u[0], size_u[1]);
     }
 
     // Print result
+    print_array_2d(u[1], size_u[0], size_u[1]);
 
     return 0;
 }
