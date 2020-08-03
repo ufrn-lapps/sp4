@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "math.h"
 #include "propagation-sphere.h"
+#include "source.h"
 
 #define max(a, b) \
     ({ __typeof__ (a) _a = (a); \
@@ -52,6 +53,8 @@ int main(int argc, char const *argv[])
     }
 
     // printf("Allocating vp array with dimensions %d x %d...\n", size_u[0], size_u[1]);
+    // Max velocity
+    float vp_max = 1.5; // In this case, we only have this velocity, but if we have many, we must get the greater.
     vp = (float **)malloc(sizeof(float *) * size_u[0]);
     for (int j = 0; j < size_u[0]; j++)
     {
@@ -70,23 +73,21 @@ int main(int argc, char const *argv[])
             vp[j][k] = 1.5;
         }
     }
-    // Max velocity
-    float vp_max = 1.5; // In this case, we only have this velocity, but if we have many, we must get the greater.
 
-    // Source injection
-    // printf("Source injection...\n");
-    int source_location[2] = {size_u[0] / 2, size_u[1] / 2}; // Middle_point of each dimension.
-    // Injecting 1 in the source location.
-    // printf("\tSource Location: %d %d\n", source_location[0], source_location[1]);
-    u[time_m % 3][source_location[0]][source_location[1]] = 1.;
-    // printf("(%d,%d)=%f ", source_location[0], source_location[1], u[0][source_location[0]][source_location[1]]);
+    // Ricker Source
+    float fpeak = 1;
+    float *source = ricker_source(fpeak, time_M - time_m + 1, 1); // dt é o incremento no laço do tempo...
+    int source_location[2] = {size_u[0] / 2, size_u[1] / 2};      // Middle_point of each dimension.
 
-    // Print intial data
-    // print_array_2d(u[0], size_u[0], size_u[1]);
+    // printf("Fonte: \n");
+    // for (int i = 0; i < time_M - time_m + 1; i++)
+    // {
+    //     printf("%.3f ", source[i]);
+    // }
+    // printf("\n");
 
     // printf("Wave propagation...\n");
-    //printf("\tPropagation time: %d until %d\n", time_m, time_M);
-    //printf("\tWave front velocity: %.2f\n", vp_max);
+
     float r1 = 0.0784;
     float x_min, x_max;
     float y_min, y_max;
@@ -125,10 +126,18 @@ int main(int argc, char const *argv[])
                               2.0F * u[t0][x][y];
             }
         }
+        // Inject source
+        u[t1][source_location[0]][source_location[1]] += source[time - 1];
     }
 
     // Print result
     print_array_2d(u[1], size_u[0], size_u[1]);
+
+    // Free resources
+    free(source);
+    free(u[0]);
+    free(u[1]);
+    free(u[2]);
 
     return 0;
 }

@@ -1,0 +1,1 @@
+float *ricker_source(float fpeak, int length, float dt);

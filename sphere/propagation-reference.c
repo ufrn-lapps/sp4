@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "math.h"
 #include "propagation-sphere.h"
+#include "source.h"
 
 // Define global variables here
 int TIME_ORDER = 2;
@@ -18,7 +20,8 @@ int main(int argc, char const *argv[])
     int y_m = (int)BORDER_SIZE + SPACE_ORDER;
     int y_M = (int)BORDER_SIZE + SPACE_ORDER + GRID_SIZE;
 
-    int size_u[] = {GRID_SIZE + 2 * BORDER_SIZE + 2 * SPACE_ORDER, GRID_SIZE + 2 * BORDER_SIZE + 2 * SPACE_ORDER};
+    int size_u[] = {GRID_SIZE + 2 * BORDER_SIZE + 2 * SPACE_ORDER,
+                    GRID_SIZE + 2 * BORDER_SIZE + 2 * SPACE_ORDER};
 
     float **vp;
     float ***u;
@@ -54,13 +57,20 @@ int main(int argc, char const *argv[])
             vp[j][k] = 1.5;
         }
     }
-    // TODO CHANGE SOURCE! Source injection
-    // printf("Source injection...\n");
-    int middle_point[2] = {size_u[0] / 2, size_u[1] / 2};
-    u[time_m % 3][middle_point[0]][middle_point[1]] = 1.;
+    // Ricker source
+    float fpeak = 1;
+    float *source = ricker_source(fpeak, time_M - time_m + 1, 1); // dt é o incremento no laço do tempo...
+    int source_location[2] = {size_u[0] / 2, size_u[1] / 2};      // Middle_point of each dimension.
 
     // Print intial data
     // print_array_2d(u[0], size_u[0], size_u[1]);
+
+    // printf("Fonte: \n");
+    // for (int i = 0; i < time_M - time_m + 1; i++)
+    // {
+    //     printf("%.3f ", source[i]);
+    // }
+    // printf("\n");
 
     // printf("Wave propagation...\n");
     float r1 = 0.0784;
@@ -83,6 +93,9 @@ int main(int argc, char const *argv[])
                                       2.0F * u[t0][x + 2][y + 2];
             }
         }
+
+        // Inject source
+        u[t1][source_location[0]][source_location[1]] += source[time - 1];
     }
 
     // Print result
@@ -103,4 +116,5 @@ void print_array_2d(float **u, int x_size, int y_size)
         printf("\n");
     }
     printf("\n\n");
+
 }
