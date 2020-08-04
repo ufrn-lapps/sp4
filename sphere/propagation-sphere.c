@@ -22,9 +22,9 @@ int main(int argc, char const *argv[])
     int BORDER_SIZE = 0;
     int SPACE_ORDER = 2;
     int time_m = 1;
-    int time_M = 8;
+    int time_M = 900;
 
-    int grid_points[2] = {44, 44};         // Number of points in each dimension of the grid.
+    int grid_points[2] = {10000, 10000};   // Number of points in each dimension of the grid.
     float points_distance[2] = {1.0, 1.0}; // Distance between each point of the grid in each dimension. in meters.
                                            // The grid length will be given by grid_points * points_distance
 
@@ -131,10 +131,11 @@ int main(int argc, char const *argv[])
     }
 
     // Print result
-    print_array_2d(u[1], size_u[0], size_u[1]);
+    // print_array_2d(u[1], size_u[0], size_u[1]);
 
     // Free resources
     free(source);
+    free(vp);
     free(u[0]);
     free(u[1]);
     free(u[2]);

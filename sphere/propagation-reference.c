@@ -13,8 +13,8 @@ int main(int argc, char const *argv[])
     int BORDER_SIZE = 0;
     int SPACE_ORDER = 2;
     int time_m = 1;
-    int time_M = 8;
-    int GRID_SIZE = 44;
+    int time_M = 900;
+    int GRID_SIZE = 10000;
     int x_m = (int)BORDER_SIZE + SPACE_ORDER;
     int x_M = (int)BORDER_SIZE + SPACE_ORDER + GRID_SIZE;
     int y_m = (int)BORDER_SIZE + SPACE_ORDER;
@@ -99,14 +99,20 @@ int main(int argc, char const *argv[])
     }
 
     // Print result
-    print_array_2d(u[1], size_u[0], size_u[1]);
+    // print_array_2d(u[1], size_u[0], size_u[1]);
+
+   // Free resources
+    free(source);
+    free(vp);
+    free(u[0]);
+    free(u[1]);
+    free(u[2]);
 
     return 0;
 }
 
 void print_array_2d(float **u, int x_size, int y_size)
 {
-
     for (int j = 0; j < x_size; j++)
     {
         for (int k = 0; k < y_size; k++)
