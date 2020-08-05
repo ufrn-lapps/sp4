@@ -22,11 +22,12 @@ int main(int argc, char const *argv[])
     int BORDER_SIZE = 0;
     int SPACE_ORDER = 2;
     int time_m = 1;
-    int time_M = 900;
+    int time_M = 500;
 
-    int grid_points[2] = {10000, 10000};   // Number of points in each dimension of the grid.
-    float points_distance[2] = {1.0, 1.0}; // Distance between each point of the grid in each dimension. in meters.
-                                           // The grid length will be given by grid_points * points_distance
+    int GRID_SIZE = 1000;
+    int grid_points[2] = {GRID_SIZE, GRID_SIZE}; // Number of points in each dimension of the grid.
+    float points_distance[2] = {1.0, 1.0};       // Distance between each point of the grid in each dimension. in meters.
+                                                 // The grid length will be given by grid_points * points_distance
 
     int x_m = (int)BORDER_SIZE + SPACE_ORDER;
     int x_M = (int)BORDER_SIZE + SPACE_ORDER + grid_points[0];
@@ -92,6 +93,7 @@ int main(int argc, char const *argv[])
     float x_min, x_max;
     float y_min, y_max;
     float raio = 0.0;
+    int alcancou = 0;
 
     for (int time = time_m, t0 = (time) % (3), t1 = (time + 1) % (3), t2 = (time + 2) % (3);
          time <= time_M;
@@ -99,6 +101,7 @@ int main(int argc, char const *argv[])
     {
         // Calculate dimension extremes
         raio = vp_max * time; // Em metros
+        //int count = 0;
 
         float s1 = source_location[1] * points_distance[1];
         y_min = max((y_m - 1) * points_distance[1], s1 - raio); // Em metros
@@ -116,6 +119,7 @@ int main(int argc, char const *argv[])
 
             for (int x = (int)floor(x_min / points_distance[0]); x < (int)ceil(x_max / points_distance[0]); x += 1) // Converte para pontos cartesianos.
             {
+                //count += 1;
                 float r0 = vp[x][y] * vp[x][y];
                 u[t1][x][y] = -4.0F * r0 * r1 * u[t0][x][y] +
                               1.0F * (r0 * r1 * u[t0][x - 1][y] +
@@ -128,6 +132,18 @@ int main(int argc, char const *argv[])
         }
         // Inject source
         u[t1][source_location[0]][source_location[1]] += source[time - 1];
+
+        // if (y_min == (y_m - 1) && y_max == (y_M - 1) &&
+        //     x_min == (x_m - 1) && x_max == (x_M - 1) && alcancou == 0)
+        // {
+        //     printf("Na iteração %d foi alncaçando os limites da grid.\n", time);
+        //     alcancou = 1;
+        // }
+
+        // if (time == 1 || time == 10 || time == 100 || time == 1000 || time == 10000)
+        // {
+        //     printf("Numero de pontos calculados no tempo=%d: %d\n", time, count);
+        // }
     }
 
     // Print result
