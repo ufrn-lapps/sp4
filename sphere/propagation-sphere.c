@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
     int BORDER_SIZE = 0;
     int SPACE_ORDER = 2;
     int time_m = 1;
-    int time_M = 500;
+    int time_M = 471;
 
     int GRID_SIZE = 1000;
     int grid_points[2] = {GRID_SIZE, GRID_SIZE}; // Number of points in each dimension of the grid.
@@ -107,17 +107,22 @@ int main(int argc, char const *argv[])
         y_min = max((y_m - 1) * points_distance[1], s1 - raio); // Em metros
         y_max = min((y_M - 1) * points_distance[1], s1 + raio); // Em metros
 
-        for (int y = (int)floor(y_min / points_distance[1]); y < (int)ceil(y_max / points_distance[1]); y += 1) // Converte para pontos cartesianos.
+        int y_min_converted = (int)floor(y_min / points_distance[1]); // Converte para pontos cartesianos.
+        int y_max_converted = (int)ceil(y_max / points_distance[1]);  // Converte para pontos cartesianos.
+
+        for (int y = y_min_converted; y < y_max_converted; y += 1)
         {
             float s2 = source_location[0] * points_distance[0];
             float s3 = y - source_location[1] * points_distance[1];
             float s4 = sqrt(raio * raio - s3 * s3);
-            // Em metros
-            x_min = max((x_m - 1) * points_distance[0], s2 - s4);
-            // Em metros
-            x_max = min((x_M - 1) * points_distance[0], s2 + s4);
 
-            for (int x = (int)floor(x_min / points_distance[0]); x < (int)ceil(x_max / points_distance[0]); x += 1) // Converte para pontos cartesianos.
+            x_min = max((x_m - 1) * points_distance[0], s2 - s4); // Em metros
+            x_max = min((x_M - 1) * points_distance[0], s2 + s4); // Em metros
+
+            int x_min_converted = (int)floor(x_min / points_distance[0]); // Converte para pontos cartesianos.
+            int x_max_converted = (int)ceil(x_max / points_distance[0]);  // Converte para pontos cartesianos.
+
+            for (int x = x_min_converted; x < x_max_converted; x += 1)
             {
                 //count += 1;
                 float r0 = vp[x][y] * vp[x][y];
