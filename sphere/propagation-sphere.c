@@ -21,25 +21,24 @@ int main(int argc, char const *argv[])
 {
     int BORDER_SIZE = 0;
     int SPACE_ORDER = 2;
-    int time_m = 1;
-    int time_M = 471;
-
+    int time_m = 0;
+    int time_M = 1000;
     int GRID_SIZE = 1000;
+
     int grid_points[2] = {GRID_SIZE, GRID_SIZE}; // Number of points in each dimension of the grid.
     float points_distance[2] = {1.0, 1.0};       // Distance between each point of the grid in each dimension. in meters.
                                                  // The grid length will be given by grid_points * points_distance
 
     int x_m = (int)BORDER_SIZE + SPACE_ORDER;
-    int x_M = (int)BORDER_SIZE + SPACE_ORDER + grid_points[0];
+    int x_M = (int)BORDER_SIZE + SPACE_ORDER + GRID_SIZE;
     int y_m = (int)BORDER_SIZE + SPACE_ORDER;
-    int y_M = (int)BORDER_SIZE + SPACE_ORDER + grid_points[1];
+    int y_M = (int)BORDER_SIZE + SPACE_ORDER + GRID_SIZE;
 
-    int size_u[] = {grid_points[0] + 2 * BORDER_SIZE + 2 * SPACE_ORDER,  // The array u, is composed by the grid points +
-                    grid_points[1] + 2 * BORDER_SIZE + 2 * SPACE_ORDER}; // border on the left and right + space order cells left and right.
+    int size_u[] = {GRID_SIZE + 2 * BORDER_SIZE + 2 * SPACE_ORDER,  // The array u, is composed by the grid points +
+                    GRID_SIZE + 2 * BORDER_SIZE + 2 * SPACE_ORDER}; // border on the left and right + space order cells left and right.
 
     float **vp;
     float ***u;
-    // float u[3][48][48];
 
     // Allocate data
     // printf("Allocating u array with dimensions %d x %d x %d...\n", TIME_ORDER + 1, size_u[0], size_u[1]);
@@ -54,7 +53,6 @@ int main(int argc, char const *argv[])
     }
 
     // printf("Allocating vp array with dimensions %d x %d...\n", size_u[0], size_u[1]);
-    // Max velocity
     float vp_max = 1.5; // In this case, we only have this velocity, but if we have many, we must get the greater.
     vp = (float **)malloc(sizeof(float *) * size_u[0]);
     for (int j = 0; j < size_u[0]; j++)
@@ -77,8 +75,9 @@ int main(int argc, char const *argv[])
 
     // Ricker Source
     float fpeak = 1;
-    float *source = ricker_source(fpeak, time_M - time_m + 1, 1); // dt é o incremento no laço do tempo...
-    int source_location[2] = {size_u[0] / 2, size_u[1] / 2};      // Middle_point of each dimension.
+    float dt = 1.0;
+    float *source = ricker_source(fpeak, time_M - time_m + 1, dt); // dt é o incremento no laço do tempo...
+    int source_location[2] = {size_u[0] / 2, size_u[1] / 2};       // Middle_point of each dimension.
 
     // printf("Fonte: \n");
     // for (int i = 0; i < time_M - time_m + 1; i++)
@@ -90,54 +89,57 @@ int main(int argc, char const *argv[])
     // printf("Wave propagation...\n");
 
     float r1 = 0.0784;
+    float r0, r2;
     float x_min, x_max;
     float y_min, y_max;
     float raio = 0.0;
-    int alcancou = 0;
+    float s1 = source_location[1] * points_distance[1];
+    float s2 = source_location[0] * points_distance[0];
+    float s3, s4;
+    int y_min_coordenate, y_max_coordenate;
+    int x_min_coordenate, x_max_coordenate;
 
     for (int time = time_m, t0 = (time) % (3), t1 = (time + 1) % (3), t2 = (time + 2) % (3);
          time <= time_M;
-         time += 1, t0 = (time) % (3), t1 = (time + 1) % (3), t2 = (time + 2) % (3))
+         time += dt, t0 = (time) % (3), t1 = (time + 1) % (3), t2 = (time + 2) % (3))
     {
         // Calculate dimension extremes
         raio = vp_max * time; // Em metros
-        //int count = 0;
 
-        float s1 = source_location[1] * points_distance[1];
-        y_min = max((y_m - 1) * points_distance[1], s1 - raio); // Em metros
-        y_max = min((y_M - 1) * points_distance[1], s1 + raio); // Em metros
+        y_min_coordenate = max(y_m + 1, (int)floor((s1 - raio) / points_distance[1]));
+        y_max_coordenate = min(y_M + 1, (int)ceil((s1 + raio) / points_distance[1]));
 
-        int y_min_converted = (int)floor(y_min / points_distance[1]); // Converte para pontos cartesianos.
-        int y_max_converted = (int)ceil(y_max / points_distance[1]);  // Converte para pontos cartesianos.
-
-        for (int y = y_min_converted; y < y_max_converted; y += 1)
+        for (int y = y_min_coordenate; y < y_max_coordenate; y += 1)
         {
-            float s2 = source_location[0] * points_distance[0];
-            float s3 = y - source_location[1] * points_distance[1];
-            float s4 = sqrt(raio * raio - s3 * s3);
+            s3 = y - source_location[1] * points_distance[1];
+            s4 = sqrt(raio * raio - s3 * s3);
 
-            x_min = max((x_m - 1) * points_distance[0], s2 - s4); // Em metros
-            x_max = min((x_M - 1) * points_distance[0], s2 + s4); // Em metros
+            x_min_coordenate = max(x_m + 1, (int)floor((s2 - s4) / points_distance[0]));
+            x_max_coordenate = min(x_M + 1, (int)ceil((s2 + s4) / points_distance[0]));
+            // printf("x=(%d,%d), y=(%d, %d)\n", x_min_coordenate, x_max_coordenate, y_min_coordenate, y_max_coordenate);
 
-            int x_min_converted = (int)floor(x_min / points_distance[0]); // Converte para pontos cartesianos.
-            int x_max_converted = (int)ceil(x_max / points_distance[0]);  // Converte para pontos cartesianos.
-
-            for (int x = x_min_converted; x < x_max_converted; x += 1)
+            for (int x = x_min_coordenate; x < x_max_coordenate; x += 1)
             {
-                //count += 1;
-                float r0 = vp[x][y] * vp[x][y];
-                u[t1][x][y] = -4.0F * r0 * r1 * u[t0][x][y] +
-                              1.0F * (r0 * r1 * u[t0][x - 1][y] +
-                                      r0 * r1 * u[t0][x][y - 1] +
-                                      r0 * r1 * u[t0][x][y + 1] +
-                                      r0 * r1 * u[t0][x + 1][y] -
-                                      u[t2][x][y]) +
+                r0 = vp[x][y] * vp[x][y];
+                r2 = r0 * r1;
+                u[t1][x][y] = -4.0F * r2 * u[t0][x][y] +
+                              r2 * (u[t0][x - 1][y] +
+                                    u[t0][x][y - 1] +
+                                    u[t0][x][y + 1] +
+                                    u[t0][x + 1][y] -
+                                    u[t2][x][y]) +
                               2.0F * u[t0][x][y];
             }
         }
         // Inject source
-        u[t1][source_location[0]][source_location[1]] += source[time - 1];
+        u[t1][source_location[0]][source_location[1]] -= source[time - 1] * vp[source_location[0]][source_location[1]] * vp[source_location[0]][source_location[1]] * dt * dt;
 
+        // if (time == 53)
+        // {
+        //     printf("x=(%d, %d), y=(%d, %d)\n", x_min_coordenate, x_max_coordenate, y_min_coordenate, y_max_coordenate);
+        //     print_array_2d(u[t1], size_u[0], size_u[1]);
+        //     exit(0);
+        // }
         // if (y_min == (y_m - 1) && y_max == (y_M - 1) &&
         //     x_min == (x_m - 1) && x_max == (x_M - 1) && alcancou == 0)
         // {
