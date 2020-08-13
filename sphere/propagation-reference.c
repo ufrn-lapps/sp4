@@ -13,7 +13,7 @@ int main(int argc, char const *argv[])
     int SPACE_ORDER = 2;
     int time_m = 0;
     int time_M = 1000;
-    int GRID_SIZE = 1000;
+    int GRID_SIZE = 100;
     int x_m = (int)BORDER_SIZE + SPACE_ORDER;
     int x_M = (int)BORDER_SIZE + SPACE_ORDER + GRID_SIZE;
     int y_m = (int)BORDER_SIZE + SPACE_ORDER;
@@ -80,9 +80,9 @@ int main(int argc, char const *argv[])
          time += dt, t0 = (time) % (3), t1 = (time + 1) % (3), t2 = (time + 2) % (3))
     {
 
-        for (int y = y_m - 1; y < y_M - 1; y += 1)
+        for (int x = x_m - 1; x < x_M - 1; x += 1)
         {
-            for (int x = x_m - 1; x < x_M - 1; x += 1)
+            for (int y = y_m - 1; y < y_M - 1; y += 1)
             {
                 r0 = vp[x + 2][y + 2] * vp[x + 2][y + 2];
                 r2 = r0 * r1;
@@ -108,7 +108,7 @@ int main(int argc, char const *argv[])
     }
 
     // Print result
-    // print_array_2d(u[1], size_u[0], size_u[1]);
+    print_array_2d(u[1], size_u[0], size_u[1]);
 
     // Free resources
     free(source);

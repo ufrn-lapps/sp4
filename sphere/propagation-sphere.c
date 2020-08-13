@@ -23,7 +23,7 @@ int main(int argc, char const *argv[])
     int SPACE_ORDER = 2;
     int time_m = 0;
     int time_M = 1000;
-    int GRID_SIZE = 1000;
+    int GRID_SIZE = 100;
 
     int grid_points[2] = {GRID_SIZE, GRID_SIZE}; // Number of points in each dimension of the grid.
     float points_distance[2] = {1.0, 1.0};       // Distance between each point of the grid in each dimension. in meters.
@@ -106,19 +106,19 @@ int main(int argc, char const *argv[])
         // Calculate dimension extremes
         raio = vp_max * time; // Em metros
 
-        y_min_coordenate = max(y_m + 1, (int)floor((s1 - raio) / points_distance[1]));
-        y_max_coordenate = min(y_M + 1, (int)ceil((s1 + raio) / points_distance[1]));
+        x_min_coordenate = max(y_m + 1, (int)floor((s1 - raio) / points_distance[1]));
+        x_max_coordenate = min(y_M + 1, (int)ceil((s1 + raio) / points_distance[1]));
 
-        for (int y = y_min_coordenate; y < y_max_coordenate; y += 1)
+        for (int x = x_min_coordenate; x < x_max_coordenate; x += 1)
         {
-            s3 = y - source_location[1] * points_distance[1];
+            s3 = x - source_location[1] * points_distance[1];
             s4 = sqrt(raio * raio - s3 * s3);
 
-            x_min_coordenate = max(x_m + 1, (int)floor((s2 - s4) / points_distance[0]));
-            x_max_coordenate = min(x_M + 1, (int)ceil((s2 + s4) / points_distance[0]));
+            y_min_coordenate = max(x_m + 1, (int)floor((s2 - s4) / points_distance[0]));
+            y_max_coordenate = min(x_M + 1, (int)ceil((s2 + s4) / points_distance[0]));
             // printf("x=(%d,%d), y=(%d, %d)\n", x_min_coordenate, x_max_coordenate, y_min_coordenate, y_max_coordenate);
 
-            for (int x = x_min_coordenate; x < x_max_coordenate; x += 1)
+            for (int y = y_min_coordenate; y < y_max_coordenate; y += 1)
             {
                 r0 = vp[x][y] * vp[x][y];
                 r2 = r0 * r1;
@@ -154,7 +154,7 @@ int main(int argc, char const *argv[])
     }
 
     // Print result
-    // print_array_2d(u[1], size_u[0], size_u[1]);
+    print_array_2d(u[1], size_u[0], size_u[1]);
 
     // Free resources
     free(source);
