@@ -21,3 +21,5 @@ sphere/propagation-reference
 sphere/out-reference.txt
 sphere/out-sphere.txt
 sphere/test.sh
+sphere/propagation-reference-3d
+sphere/propagation-sphere-3d
